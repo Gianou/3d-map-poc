@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { LayerService } from '../../services/layer.service';
+import { OsmBuildingsService } from '../../services/osm-buildings.service';
 
 @Component({
   selector: 'app-3d-layer-panel',
@@ -9,9 +9,9 @@ import { LayerService } from '../../services/layer.service';
   styleUrl: './3d-layer-panel.component.css',
 })
 export class ThreeDLayerPanelComponent {
-  layerService = inject(LayerService);
+  osmBuildingsService = inject(OsmBuildingsService);
 
   onToggleBuildings(): void {
-    this.layerService.toggleBuildings();
+    this.osmBuildingsService.toggleBuildings();
   }
 }

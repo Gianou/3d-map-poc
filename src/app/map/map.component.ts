@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, inject } from '@angular/core';
 import * as L from 'leaflet';
 import { LayerService } from '../services/layer.service';
+import { OsmBuildingsService } from '../services/osm-buildings.service';
 
 @Component({
   selector: 'app-map',
@@ -12,6 +13,7 @@ import { LayerService } from '../services/layer.service';
 export class MapComponent implements AfterViewInit {
   private map!: L.Map;
   private layerService = inject(LayerService);
+  private osmBuildingsService = inject(OsmBuildingsService);
 
   ngAfterViewInit(): void {
     this.initMap();
@@ -28,7 +30,8 @@ export class MapComponent implements AfterViewInit {
       attribution: '© OpenStreetMap contributors',
     }).addTo(this.map);
 
-    // Pass the map reference to the layer service
+    // Pass the map reference to services
     this.layerService.setMap(this.map);
+    this.osmBuildingsService.setMap(this.map);
   }
 }

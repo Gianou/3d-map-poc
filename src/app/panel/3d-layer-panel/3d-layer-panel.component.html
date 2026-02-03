@@ -10,11 +10,11 @@
       </div>
       <button
         class="toggle-btn"
-        [class.active]="layerService.buildingsEnabled()"
+        [class.active]="osmBuildingsService.buildingsEnabled()"
         (click)="onToggleBuildings()"
         [attr.aria-label]="'Toggle OSM Buildings'"
       >
-        {{ layerService.buildingsEnabled() ? "ON" : "OFF" }}
+        {{ osmBuildingsService.buildingsEnabled() ? "ON" : "OFF" }}
       </button>
     </div>
   </div>
