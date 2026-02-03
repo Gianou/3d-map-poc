@@ -1,22 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
-import { LayerService } from '../services/layer.service';
+import { Component } from '@angular/core';
+import { ThreeDLayerPanelComponent } from './3d-layer-panel/3d-layer-panel.component';
+import { GeoserverPanelComponent } from './geoserver-panel/geoserver-panel.component';
 
 @Component({
-    selector: 'app-panel',
-    imports: [CommonModule],
-    templateUrl: './panel.component.html',
-    styleUrl: './panel.component.css'
+  selector: 'app-panel',
+  imports: [CommonModule, GeoserverPanelComponent, ThreeDLayerPanelComponent],
+  templateUrl: './panel.component.html',
+  styleUrl: './panel.component.css',
 })
-export class PanelComponent implements OnInit {
+export class PanelComponent {
   title = 'Control Panel';
-  layerService = inject(LayerService);
-
-  ngOnInit(): void {
-    this.layerService.fetchLayers();
-  }
-
-  onToggleLayer(index: number): void {
-    this.layerService.toggleLayer(index);
-  }
 }
