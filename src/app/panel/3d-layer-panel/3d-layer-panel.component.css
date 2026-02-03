@@ -12,7 +12,75 @@ h2 {
   margin-top: 20px;
 }
 
-.placeholder {
+.layer-item {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: box-shadow 0.2s;
+}
+
+.layer-item:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.layer-info {
+  flex: 1;
+  margin-right: 12px;
+}
+
+.layer-info h4 {
+  margin: 0 0 4px 0;
+  color: #2c3e50;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.layer-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.layer-title-row h4 {
+  margin: 0;
+}
+
+.layer-description {
+  margin: 0;
+  font-size: 12px;
   color: #666;
-  font-style: italic;
+  line-height: 1.4;
+}
+
+.toggle-btn {
+  min-width: 60px;
+  padding: 8px 16px;
+  border: 2px solid #ccc;
+  background-color: #fff;
+  color: #666;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 12px;
+  transition: all 0.3s;
+}
+
+.toggle-btn:hover {
+  border-color: #999;
+}
+
+.toggle-btn.active {
+  background-color: #27ae60;
+  border-color: #27ae60;
+  color: white;
+}
+
+.toggle-btn.active:hover {
+  background-color: #229954;
+  border-color: #229954;
 }

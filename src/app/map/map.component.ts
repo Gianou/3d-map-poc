@@ -4,10 +4,10 @@ import * as L from 'leaflet';
 import { LayerService } from '../services/layer.service';
 
 @Component({
-    selector: 'app-map',
-    imports: [CommonModule],
-    templateUrl: './map.component.html',
-    styleUrl: './map.component.css'
+  selector: 'app-map',
+  imports: [CommonModule],
+  templateUrl: './map.component.html',
+  styleUrl: './map.component.css',
 })
 export class MapComponent implements AfterViewInit {
   private map!: L.Map;
@@ -19,8 +19,8 @@ export class MapComponent implements AfterViewInit {
 
   private initMap(): void {
     this.map = L.map('map', {
-      center: [46.2044, 6.1432], // Centered on Geneva, Switzerland
-      zoom: 13,
+      center: [46.28315, 7.5385], // Centered on buildings location
+      zoom: 17,
     });
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {

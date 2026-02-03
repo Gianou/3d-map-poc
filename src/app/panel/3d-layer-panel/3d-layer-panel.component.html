@@ -1,6 +1,21 @@
 <div class="layer-panel-container">
   <h2>3D Layers</h2>
   <div class="panel-content">
-    <p class="placeholder">3D layer controls will be implemented here</p>
+    <div class="layer-item">
+      <div class="layer-info">
+        <div class="layer-title-row">
+          <h4>OSM Buildings</h4>
+        </div>
+        <p class="layer-description">Display 3D buildings on the map</p>
+      </div>
+      <button
+        class="toggle-btn"
+        [class.active]="layerService.buildingsEnabled()"
+        (click)="onToggleBuildings()"
+        [attr.aria-label]="'Toggle OSM Buildings'"
+      >
+        {{ layerService.buildingsEnabled() ? "ON" : "OFF" }}
+      </button>
+    </div>
   </div>
 </div>

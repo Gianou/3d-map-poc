@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { LayerService } from '../../services/layer.service';
 
 @Component({
   selector: 'app-3d-layer-panel',
@@ -8,5 +9,9 @@ import { Component } from '@angular/core';
   styleUrl: './3d-layer-panel.component.css',
 })
 export class ThreeDLayerPanelComponent {
-  // TODO: Add 3D layer functionality
+  layerService = inject(LayerService);
+
+  onToggleBuildings(): void {
+    this.layerService.toggleBuildings();
+  }
 }
