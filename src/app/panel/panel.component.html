@@ -1,0 +1,39 @@
+<div class="panel-container">
+  <h2>{{ title }}</h2>
+  <div class="panel-content">
+    <h3>Available Layers</h3>
+    @if (layerService.layers().length === 0) {
+      <p class="loading">Loading layers...</p>
+    } @else {
+      <div class="layers-list">
+        @for (
+          layer of layerService.layers();
+          track layer.name;
+          let i = $index
+        ) {
+          <div class="layer-item">
+            <div class="layer-info">
+              <div class="layer-title-row">
+                <h4>{{ layer.title }}</h4>
+                <span class="layer-type-badge" [class]="'badge-' + layer.type">
+                  {{ layer.type }}
+                </span>
+              </div>
+              @if (layer.abstract) {
+                <p class="layer-description">{{ layer.abstract }}</p>
+              }
+            </div>
+            <button
+              class="toggle-btn"
+              [class.active]="layer.enabled"
+              (click)="onToggleLayer(i)"
+              [attr.aria-label]="'Toggle ' + layer.title"
+            >
+              {{ layer.enabled ? "ON" : "OFF" }}
+            </button>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>
