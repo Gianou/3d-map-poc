@@ -10,6 +10,7 @@ export interface Layer {
   enabled: boolean;
   type: 'vector' | 'raster' | 'unknown';
   wmsLayer?: L.TileLayer.WMS;
+  geoJsonLayer?: L.GeoJSON;
 }
 
 @Injectable({
@@ -28,10 +29,11 @@ export class LayerService {
       if (!this.map) return;
 
       currentLayers.forEach((layer) => {
-        if (layer.enabled && !layer.wmsLayer) {
+        const hasLayer = layer.wmsLayer || layer.geoJsonLayer;
+        if (layer.enabled && !hasLayer) {
           // Add layer to map
           this.addLayerToMap(layer);
-        } else if (!layer.enabled && layer.wmsLayer) {
+        } else if (!layer.enabled && hasLayer) {
           // Remove layer from map
           this.removeLayerFromMap(layer);
         }
@@ -160,41 +162,111 @@ export class LayerService {
   private addLayerToMap(layer: Layer): void {
     if (!this.map) return;
 
-    const wmsLayer = L.tileLayer.wms(
-      `${environment.geoserverUrl}/geoserver/wms`,
-      {
-        layers: layer.name,
-        format: 'image/png',
-        transparent: true,
-        version: '1.3.0',
-        attribution: layer.title,
-      },
-    );
+    if (layer.name.toLowerCase().includes('pantagruel')) {
+      // Add layers with "pantagruel" in the name as GeoJSON
+      this.addGeoJsonLayer(layer);
+    } else {
+      // Add other layers as WMS
+      const wmsLayer = L.tileLayer.wms(
+        `${environment.geoserverUrl}/geoserver/wms`,
+        {
+          layers: layer.name,
+          format: 'image/png',
+          transparent: true,
+          version: '1.3.0',
+          attribution: layer.title,
+        },
+      );
 
-    wmsLayer.addTo(this.map);
+      wmsLayer.addTo(this.map);
 
-    // Update the layer with the WMS reference
-    const currentLayers = this.layers();
-    const index = currentLayers.findIndex((l) => l.name === layer.name);
-    if (index !== -1) {
-      const updatedLayers = [...currentLayers];
-      updatedLayers[index] = { ...updatedLayers[index], wmsLayer };
-      this.layers.set(updatedLayers);
+      // Update the layer with the WMS reference
+      const currentLayers = this.layers();
+      const index = currentLayers.findIndex((l) => l.name === layer.name);
+      if (index !== -1) {
+        const updatedLayers = [...currentLayers];
+        updatedLayers[index] = { ...updatedLayers[index], wmsLayer };
+        this.layers.set(updatedLayers);
+      }
     }
   }
 
   private removeLayerFromMap(layer: Layer): void {
-    if (!this.map || !layer.wmsLayer) return;
+    if (!this.map) return;
 
-    this.map.removeLayer(layer.wmsLayer);
+    if (layer.wmsLayer) {
+      this.map.removeLayer(layer.wmsLayer);
+    }
+    if (layer.geoJsonLayer) {
+      this.map.removeLayer(layer.geoJsonLayer);
+    }
 
-    // Update the layer to remove the WMS reference
+    // Update the layer to remove layer references
     const currentLayers = this.layers();
     const index = currentLayers.findIndex((l) => l.name === layer.name);
     if (index !== -1) {
       const updatedLayers = [...currentLayers];
-      updatedLayers[index] = { ...updatedLayers[index], wmsLayer: undefined };
+      updatedLayers[index] = {
+        ...updatedLayers[index],
+        wmsLayer: undefined,
+        geoJsonLayer: undefined,
+      };
       this.layers.set(updatedLayers);
     }
+  }
+
+  private addGeoJsonLayer(layer: Layer): void {
+    if (!this.map) return;
+
+    // Extract workspace and layer name from the full layer name (e.g., "workspace:layername")
+    const [workspace, layerName] = layer.name.includes(':')
+      ? layer.name.split(':')
+      : ['', layer.name];
+
+    const wfsUrl =
+      `${environment.geoserverUrl}/geoserver/wfs?` +
+      `service=WFS&` +
+      `version=2.0.0&` +
+      `request=GetFeature&` +
+      `typeName=${layer.name}&` +
+      `outputFormat=application/json`;
+
+    this.http.get(wfsUrl).subscribe({
+      next: (geoJsonData: any) => {
+        if (!this.map) return;
+
+        const geoJsonLayer = L.geoJSON(geoJsonData, {
+          style: () => ({
+            color: '#3388ff',
+            weight: 2,
+            opacity: 0.8,
+            fillOpacity: 0.4,
+          }),
+          onEachFeature: (feature, featureLayer) => {
+            // Add popup with feature properties
+            if (feature.properties) {
+              const popupContent = Object.entries(feature.properties)
+                .map(([key, value]) => `<strong>${key}:</strong> ${value}`)
+                .join('<br>');
+              featureLayer.bindPopup(popupContent);
+            }
+          },
+        });
+
+        geoJsonLayer.addTo(this.map!);
+
+        // Update the layer with the GeoJSON reference
+        const currentLayers = this.layers();
+        const index = currentLayers.findIndex((l) => l.name === layer.name);
+        if (index !== -1) {
+          const updatedLayers = [...currentLayers];
+          updatedLayers[index] = { ...updatedLayers[index], geoJsonLayer };
+          this.layers.set(updatedLayers);
+        }
+      },
+      error: (error) => {
+        console.error(`Error fetching GeoJSON for layer ${layer.name}:`, error);
+      },
+    });
   }
 }
