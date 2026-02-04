@@ -1,17 +1,40 @@
 <div class="app-container">
   <div class="header">
     <h1>3D Map POC - Multi-Library Demo</h1>
-    <div class="tech-selector">
-      <label for="tech-select">Map Library:</label>
-      <select
-        id="tech-select"
-        [value]="currentTech()"
-        (change)="onTechChange($event)"
+    <div class="header-controls">
+      <div class="tech-selector">
+        <label for="tech-select">Map Library:</label>
+        <select
+          id="tech-select"
+          [value]="currentTech()"
+          (change)="onTechChange($event)"
+        >
+          <option value="leaflet-osm">Leaflet + OSM Buildings</option>
+          <option value="openlayers">OpenLayers + Deck.gl</option>
+          <option value="maplibre">MapLibre GL</option>
+        </select>
+      </div>
+      <button
+        class="info-button"
+        (click)="openInfoModal()"
+        title="About this project"
       >
-        <option value="leaflet-osm">Leaflet + OSM Buildings</option>
-        <option value="openlayers">OpenLayers + Deck.gl</option>
-        <option value="maplibre">MapLibre GL</option>
-      </select>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+      </button>
     </div>
   </div>
   <div class="content">
@@ -20,6 +43,57 @@
     </div>
     <div class="map-section">
       <app-map></app-map>
+    </div>
+  </div>
+</div>
+
+<!-- Info Modal -->
+<div class="modal-overlay" *ngIf="showInfoModal()" (click)="closeInfoModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <button
+      class="modal-close"
+      (click)="closeInfoModal()"
+      aria-label="Close modal"
+    >
+      &times;
+    </button>
+    <h2>⚠️ Important Notice</h2>
+    <p>
+      <strong>This is a demonstration project only.</strong> The data and layers
+      shown in this POC are for testing and visualization purposes and should
+      <strong
+        >not be used for any production, research, or decision-making
+        purposes.</strong
+      >
+    </p>
+    <div class="modal-section">
+      <h3>About Citiwatts</h3>
+      <p>
+        If you are interested in energy planning data and tools for heating and
+        cooling planning across Europe, please visit:
+      </p>
+      <ul>
+        <li>
+          <a href="https://citiwatts.eu/" target="_blank" rel="noopener"
+            >Citiwatts Platform</a
+          >
+          - Access real energy planning tools and data
+        </li>
+        <li>
+          <a href="https://project.citiwatts.eu/" target="_blank" rel="noopener"
+            >Citiwatts Project</a
+          >
+          - Learn more about the initiative
+        </li>
+      </ul>
+    </div>
+    <div class="modal-section">
+      <h3>API Key Information</h3>
+      <p>
+        Some 3D features require a free MapTiler API key. Features that work
+        without an API key include: all base maps, local 3D buildings, 3D
+        models, deck.gl visualizations, and camera controls.
+      </p>
     </div>
   </div>
 </div>
