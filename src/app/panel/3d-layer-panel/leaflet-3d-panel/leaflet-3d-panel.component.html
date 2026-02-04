@@ -7,10 +7,10 @@
   </div>
   <button
     class="toggle-btn"
-    [class.active]="threeDService.buildingsEnabled()"
+    [class.active]="buildingsEnabled()"
     (click)="onToggleBuildings()"
-    [attr.aria-label]="'Toggle OSM Buildings'"
+    [attr.aria-label]="'Toggle 3D Buildings'"
   >
-    {{ threeDService.buildingsEnabled() ? "ON" : "OFF" }}
+    {{ buildingsEnabled() ? "ON" : "OFF" }}
   </button>
 </div>

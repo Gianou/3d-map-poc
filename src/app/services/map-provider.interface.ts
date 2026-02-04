@@ -60,30 +60,3 @@ export interface IMapProvider {
    */
   getMapInstance(): any;
 }
-
-export interface I3DProvider {
-  /**
-   * Enable 3D buildings layer
-   */
-  enable3DBuildings(): void;
-
-  /**
-   * Disable 3D buildings layer
-   */
-  disable3DBuildings(): void;
-
-  /**
-   * Check if 3D is currently enabled
-   */
-  is3DEnabled(): boolean;
-
-  /**
-   * Add a custom 3D layer
-   */
-  add3DLayer?(data: any, options?: any): void;
-
-  /**
-   * Remove custom 3D layer
-   */
-  remove3DLayer?(): void;
-}

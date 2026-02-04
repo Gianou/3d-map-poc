@@ -1,19 +1,13 @@
 import * as L from 'leaflet';
 import {
   GeoJSONLayerOptions,
-  I3DProvider,
   IMapProvider,
   WMSLayerOptions,
 } from '../map-provider.interface';
 
-// Declare OSMBuildings from global scope
-declare var OSMBuildings: any;
-
-export class LeafletOSMProvider implements IMapProvider, I3DProvider {
+export class LeafletOSMProvider implements IMapProvider {
   private map?: L.Map;
   private layers = new Map<string, L.Layer>();
-  private osmBuildings?: any;
-  private buildings3DEnabled = false;
 
   initialize(
     containerId: string,
@@ -29,22 +23,9 @@ export class LeafletOSMProvider implements IMapProvider, I3DProvider {
       maxZoom: 19,
       attribution: '© OpenStreetMap contributors',
     }).addTo(this.map);
-
-    // Initialize OSM Buildings if available
-    this.initOSMBuildings();
   }
 
   destroy(): void {
-    if (this.osmBuildings) {
-      try {
-        // Clean up OSM Buildings
-        this.buildings3DEnabled = false;
-        this.osmBuildings = undefined;
-      } catch (error) {
-        console.error('Error cleaning up OSM Buildings:', error);
-      }
-    }
-
     if (this.map) {
       this.map.remove();
       this.map = undefined;
@@ -110,74 +91,5 @@ export class LeafletOSMProvider implements IMapProvider, I3DProvider {
 
   getMapInstance(): L.Map | undefined {
     return this.map;
-  }
-
-  private initOSMBuildings(): void {
-    if (!this.map) return;
-
-    try {
-      if (typeof OSMBuildings !== 'undefined') {
-        this.osmBuildings = new OSMBuildings(this.map);
-        console.log('OSM Buildings initialized successfully for Leaflet');
-      } else {
-        console.warn('OSMBuildings library not loaded yet');
-      }
-    } catch (error) {
-      console.error('Error initializing OSM Buildings:', error);
-    }
-  }
-
-  enable3DBuildings(): void {
-    if (!this.osmBuildings) {
-      this.initOSMBuildings();
-    }
-
-    if (!this.osmBuildings) {
-      console.error('OSM Buildings library not available');
-      return;
-    }
-
-    try {
-      // Load buildings from hardcoded GeoJSON file
-      this.loadBuildingsFromGeoJSON();
-      this.buildings3DEnabled = true;
-      console.log('3D buildings enabled - loading from buildings.geojson');
-    } catch (error) {
-      console.error('Error enabling 3D buildings:', error);
-    }
-  }
-
-  disable3DBuildings(): void {
-    if (this.osmBuildings && this.buildings3DEnabled) {
-      try {
-        // Remove buildings layer by setting empty data
-        this.osmBuildings.set({ type: 'FeatureCollection', features: [] });
-        this.buildings3DEnabled = false;
-        console.log('3D buildings disabled');
-      } catch (error) {
-        console.error('Error disabling 3D buildings:', error);
-      }
-    }
-  }
-
-  private loadBuildingsFromGeoJSON(): void {
-    if (!this.osmBuildings) return;
-
-    // Load hardcoded GeoJSON from data folder
-    fetch('/data/buildings.geojson')
-      .then((response) => response.json())
-      .then((geoJsonData) => {
-        if (this.osmBuildings) {
-          this.osmBuildings.set(geoJsonData);
-          console.log('Buildings loaded from GeoJSON file');
-        }
-      })
-      .catch((error) => {
-        console.error('Error loading buildings GeoJSON:', error);
-      });
-  }
-
-  is3DEnabled(): boolean {
-    return this.buildings3DEnabled;
   }
 }

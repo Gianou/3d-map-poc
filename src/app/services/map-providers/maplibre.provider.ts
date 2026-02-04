@@ -5,16 +5,13 @@ import maplibregl, {
 } from 'maplibre-gl';
 import {
   GeoJSONLayerOptions,
-  I3DProvider,
   IMapProvider,
   WMSLayerOptions,
 } from '../map-provider.interface';
 
-export class MapLibreProvider implements IMapProvider, I3DProvider {
+export class MapLibreProvider implements IMapProvider {
   private map?: MapLibreMap;
   private layers: Map<string, string> = new Map();
-  private buildings3DEnabled = false;
-  private localBuildings3DEnabled = false;
 
   initialize(
     containerId: string,
@@ -54,8 +51,6 @@ export class MapLibreProvider implements IMapProvider, I3DProvider {
       this.map = undefined;
     }
     this.layers.clear();
-    this.buildings3DEnabled = false;
-    this.localBuildings3DEnabled = false;
   }
 
   addWMSLayer(id: string, options: WMSLayerOptions): void {
@@ -203,127 +198,5 @@ export class MapLibreProvider implements IMapProvider, I3DProvider {
 
   getMapInstance(): MapLibreMap | undefined {
     return this.map;
-  }
-
-  enable3DBuildings(): void {
-    if (!this.map) return;
-
-    // Add 3D buildings layer using MapLibre's built-in extrusion
-    const layers = this.map.getStyle().layers;
-    const labelLayerId = layers?.find((layer) => layer.type === 'symbol')?.id;
-
-    if (!this.map.getSource('openmaptiles')) {
-      // Add OpenMapTiles source for building data
-      this.map.addSource('openmaptiles', {
-        type: 'vector',
-        url: 'https://api.maptiler.com/tiles/v3/tiles.json?key=get_your_own_OpIi9ZULNHzrESv6T2vL',
-      });
-    }
-
-    if (!this.map.getLayer('3d-buildings')) {
-      this.map.addLayer(
-        {
-          id: '3d-buildings',
-          source: 'openmaptiles',
-          'source-layer': 'building',
-          type: 'fill-extrusion',
-          minzoom: 15,
-          paint: {
-            'fill-extrusion-color': '#aaa',
-            'fill-extrusion-height': [
-              'interpolate',
-              ['linear'],
-              ['zoom'],
-              15,
-              0,
-              15.05,
-              ['get', 'render_height'],
-            ],
-            'fill-extrusion-base': [
-              'interpolate',
-              ['linear'],
-              ['zoom'],
-              15,
-              0,
-              15.05,
-              ['get', 'render_min_height'],
-            ],
-            'fill-extrusion-opacity': 0.6,
-          },
-        },
-        labelLayerId,
-      );
-    }
-
-    this.buildings3DEnabled = true;
-    console.log('3D buildings enabled (MapLibre)');
-  }
-
-  disable3DBuildings(): void {
-    if (this.map && this.map.getLayer('3d-buildings')) {
-      this.map.removeLayer('3d-buildings');
-      this.buildings3DEnabled = false;
-      console.log('3D buildings disabled (MapLibre)');
-    }
-  }
-
-  is3DEnabled(): boolean {
-    return this.buildings3DEnabled;
-  }
-
-  async enableLocalBuildings3D(): Promise<void> {
-    if (!this.map || this.localBuildings3DEnabled) return;
-
-    try {
-      // Fetch local buildings.geojson
-      const response = await fetch('/data/buildings.geojson');
-      const geojsonData = await response.json();
-
-      // Add source if it doesn't exist
-      if (!this.map.getSource('local-buildings')) {
-        this.map.addSource('local-buildings', {
-          type: 'geojson',
-          data: geojsonData,
-        });
-      }
-
-      // Add 3D extrusion layer
-      if (!this.map.getLayer('local-buildings-3d')) {
-        this.map.addLayer({
-          id: 'local-buildings-3d',
-          type: 'fill-extrusion',
-          source: 'local-buildings',
-          paint: {
-            'fill-extrusion-color': ['get', 'wallColor'],
-            'fill-extrusion-height': ['get', 'height'],
-            'fill-extrusion-base': ['get', 'minHeight'],
-            'fill-extrusion-opacity': 0.8,
-          },
-        });
-      }
-
-      this.localBuildings3DEnabled = true;
-      console.log('Local 3D buildings enabled (MapLibre)');
-    } catch (error) {
-      console.error('Error loading local buildings:', error);
-    }
-  }
-
-  disableLocalBuildings3D(): void {
-    if (!this.map || !this.localBuildings3DEnabled) return;
-
-    if (this.map.getLayer('local-buildings-3d')) {
-      this.map.removeLayer('local-buildings-3d');
-    }
-    if (this.map.getSource('local-buildings')) {
-      this.map.removeSource('local-buildings');
-    }
-
-    this.localBuildings3DEnabled = false;
-    console.log('Local 3D buildings disabled (MapLibre)');
-  }
-
-  isLocalBuildings3DEnabled(): boolean {
-    return this.localBuildings3DEnabled;
   }
 }
