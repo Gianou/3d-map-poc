@@ -66,26 +66,6 @@
 <div class="layer-item">
   <div class="layer-info">
     <div class="layer-title-row">
-      <h4>3D Model (.obj)</h4>
-      <span class="badge badge-model">Custom Layer</span>
-    </div>
-    <p class="layer-description">
-      Ping pong table model at 46°16'59.2"N 7°32'18.1"E
-    </p>
-  </div>
-  <button
-    class="toggle-btn"
-    [class.active]="modelEnabled()"
-    (click)="onToggleModel()"
-    [attr.aria-label]="'Toggle 3D Model'"
-  >
-    {{ modelEnabled() ? "ON" : "OFF" }}
-  </button>
-</div>
-
-<div class="layer-item">
-  <div class="layer-info">
-    <div class="layer-title-row">
       <h4>3D Camera Controls</h4>
       <span class="badge badge-camera">Interactive</span>
     </div>

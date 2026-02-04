@@ -33,6 +33,16 @@
   color: #7b1fa2;
 }
 
+.badge-terrain {
+  background-color: #fff3e0;
+  color: #e65100;
+}
+
+.badge-model {
+  background-color: #fce4ec;
+  color: #c2185b;
+}
+
 .badge-camera {
   background-color: #e8f5e9;
   color: #2e7d32;
