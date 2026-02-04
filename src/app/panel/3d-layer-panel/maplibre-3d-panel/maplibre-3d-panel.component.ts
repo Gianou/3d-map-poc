@@ -15,6 +15,9 @@ export class MapLibre3DPanelComponent {
 
   mapTilerBuildingsEnabled = signal<boolean>(false);
   localBuildingsEnabled = signal<boolean>(false);
+  cameraControlsEnabled = signal<boolean>(false);
+  currentPitch = signal<number>(0);
+  currentBearing = signal<number>(0);
 
   private get provider(): MapLibreProvider | undefined {
     const currentProvider = this.layerService.getMapProvider();
@@ -44,6 +47,56 @@ export class MapLibre3DPanelComponent {
     } else {
       await this.enableLocalBuildings();
       this.localBuildingsEnabled.set(true);
+    }
+  }
+
+  onToggleCameraControls(): void {
+    if (this.cameraControlsEnabled()) {
+      this.disableCameraControls();
+      this.cameraControlsEnabled.set(false);
+    } else {
+      this.enableCameraControls();
+      this.cameraControlsEnabled.set(true);
+    }
+  }
+
+  onPitchChange(event: Event): void {
+    const value = +(event.target as HTMLInputElement).value;
+    this.currentPitch.set(value);
+    if (this.map) {
+      this.map.setPitch(value);
+    }
+  }
+
+  onBearingChange(event: Event): void {
+    const value = +(event.target as HTMLInputElement).value;
+    this.currentBearing.set(value);
+    if (this.map) {
+      this.map.setBearing(value);
+    }
+  }
+
+  onResetCamera(): void {
+    if (this.map) {
+      this.map.easeTo({
+        pitch: 0,
+        bearing: 0,
+        duration: 1000,
+      });
+      this.currentPitch.set(0);
+      this.currentBearing.set(0);
+    }
+  }
+
+  onCinematicView(): void {
+    if (this.map) {
+      this.map.easeTo({
+        pitch: 60,
+        bearing: -45,
+        duration: 1500,
+      });
+      this.currentPitch.set(60);
+      this.currentBearing.set(-45);
     }
   }
 
@@ -150,5 +203,41 @@ export class MapLibre3DPanelComponent {
     }
 
     console.log('Local 3D buildings disabled (MapLibre)');
+  }
+
+  private enableCameraControls(): void {
+    if (!this.map) return;
+
+    // Enable pitch and rotation interactions
+    this.map.dragRotate.enable();
+    this.map.touchZoomRotate.enableRotation();
+
+    // Set max pitch to allow tilting
+    this.map.setMaxPitch(85);
+
+    console.log('3D camera controls enabled (MapLibre)');
+  }
+
+  private disableCameraControls(): void {
+    if (!this.map) return;
+
+    // Reset camera to flat view
+    this.map.easeTo({
+      pitch: 0,
+      bearing: 0,
+      duration: 500,
+    });
+
+    // Disable pitch and rotation interactions
+    this.map.dragRotate.disable();
+    this.map.touchZoomRotate.disableRotation();
+
+    // Reset max pitch
+    this.map.setMaxPitch(0);
+
+    this.currentPitch.set(0);
+    this.currentBearing.set(0);
+
+    console.log('3D camera controls disabled (MapLibre)');
   }
 }

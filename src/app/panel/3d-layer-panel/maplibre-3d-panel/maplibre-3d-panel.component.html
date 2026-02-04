@@ -43,6 +43,63 @@
   </button>
 </div>
 
+<div class="layer-item">
+  <div class="layer-info">
+    <div class="layer-title-row">
+      <h4>3D Camera Controls</h4>
+      <span class="badge badge-camera">Interactive</span>
+    </div>
+    <p class="layer-description">
+      Enable pitch (tilt) and bearing (rotation) for cinematic views
+    </p>
+  </div>
+  <button
+    class="toggle-btn"
+    [class.active]="cameraControlsEnabled()"
+    (click)="onToggleCameraControls()"
+    [attr.aria-label]="'Toggle 3D Camera Controls'"
+  >
+    {{ cameraControlsEnabled() ? "ON" : "OFF" }}
+  </button>
+</div>
+
+<div class="camera-controls" *ngIf="cameraControlsEnabled()">
+  <div class="control-group">
+    <label for="pitch-slider">Pitch (Tilt): {{ currentPitch() }}°</label>
+    <input
+      id="pitch-slider"
+      type="range"
+      min="0"
+      max="85"
+      [value]="currentPitch()"
+      (input)="onPitchChange($event)"
+      class="slider"
+    />
+  </div>
+
+  <div class="control-group">
+    <label for="bearing-slider"
+      >Bearing (Rotation): {{ currentBearing() }}°</label
+    >
+    <input
+      id="bearing-slider"
+      type="range"
+      min="-180"
+      max="180"
+      [value]="currentBearing()"
+      (input)="onBearingChange($event)"
+      class="slider"
+    />
+  </div>
+
+  <div class="preset-buttons">
+    <button class="preset-btn" (click)="onResetCamera()">Reset View</button>
+    <button class="preset-btn preset-cinematic" (click)="onCinematicView()">
+      Cinematic View
+    </button>
+  </div>
+</div>
+
 <div class="info-note">
   <small
     >💡 Both examples use MapLibre's fill-extrusion layer type for native 3D
