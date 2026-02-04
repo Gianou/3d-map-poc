@@ -10,7 +10,7 @@ import { LayerService } from '../services/layer.service';
 import { MapFactoryService } from '../services/map-factory.service';
 import { I3DProvider, IMapProvider } from '../services/map-provider.interface';
 import { MapStateService } from '../services/map-state.service';
-import { OsmBuildingsService } from '../services/osm-buildings.service';
+import { ThreeDService } from '../services/three-d.service';
 
 @Component({
   selector: 'app-map',
@@ -21,7 +21,7 @@ import { OsmBuildingsService } from '../services/osm-buildings.service';
 export class MapComponent implements AfterViewInit, OnDestroy {
   private mapProvider?: IMapProvider & I3DProvider;
   private layerService = inject(LayerService);
-  private osmBuildingsService = inject(OsmBuildingsService);
+  private threeDService = inject(ThreeDService);
   private mapFactory = inject(MapFactoryService);
   private mapStateService = inject(MapStateService);
 
@@ -57,7 +57,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
     // Pass the provider to services
     this.layerService.setMapProvider(this.mapProvider);
-    this.osmBuildingsService.setProvider(this.mapProvider);
+    this.threeDService.setProvider(this.mapProvider);
   }
 
   private reinitializeMap(): void {

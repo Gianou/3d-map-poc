@@ -1,0 +1,16 @@
+<div class="layer-item">
+  <div class="layer-info">
+    <div class="layer-title-row">
+      <h4>OSM Buildings (Leaflet)</h4>
+    </div>
+    <p class="layer-description">Display 3D buildings from buildings.geojson</p>
+  </div>
+  <button
+    class="toggle-btn"
+    [class.active]="threeDService.buildingsEnabled()"
+    (click)="onToggleBuildings()"
+    [attr.aria-label]="'Toggle OSM Buildings'"
+  >
+    {{ threeDService.buildingsEnabled() ? "ON" : "OFF" }}
+  </button>
+</div>

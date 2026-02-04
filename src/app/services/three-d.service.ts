@@ -1,21 +1,22 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
 import { I3DProvider } from './map-provider.interface';
 
 @Injectable({
   providedIn: 'root',
 })
-export class OsmBuildingsService {
+export class ThreeDService {
   private provider?: I3DProvider;
 
   buildingsEnabled = signal<boolean>(false);
-
-  constructor(private http: HttpClient) {}
 
   setProvider(provider: I3DProvider): void {
     this.provider = provider;
     // Reset state when provider changes
     this.buildingsEnabled.set(false);
+  }
+
+  getProvider(): I3DProvider | undefined {
+    return this.provider;
   }
 
   toggleBuildings(): void {

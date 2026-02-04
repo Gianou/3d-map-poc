@@ -1,0 +1,20 @@
+<div class="layer-item">
+  <div class="layer-info">
+    <div class="layer-title-row">
+      <h4>3D Buildings (MapLibre GL)</h4>
+    </div>
+    <p class="layer-description">Display extruded 3D buildings with WebGL</p>
+  </div>
+  <button
+    class="toggle-btn"
+    [class.active]="threeDService.buildingsEnabled()"
+    (click)="onToggleBuildings()"
+    [attr.aria-label]="'Toggle 3D Buildings'"
+  >
+    {{ threeDService.buildingsEnabled() ? "ON" : "OFF" }}
+  </button>
+</div>
+
+<div class="info-note">
+  <small>Note: Uses MapLibre's built-in fill-extrusion for 3D building visualization</small>
+</div>

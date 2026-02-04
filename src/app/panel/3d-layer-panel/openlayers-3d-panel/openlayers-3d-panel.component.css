@@ -1,0 +1,30 @@
+.no-3d-message {
+  padding: 20px;
+  text-align: center;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  color: #666;
+}
+
+.info-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.no-3d-message h4 {
+  margin: 8px 0;
+  font-size: 14px;
+  color: #333;
+}
+
+.no-3d-message p {
+  margin: 4px 0;
+  font-size: 12px;
+}
+
+.suggestion {
+  font-style: italic;
+  color: #888;
+  margin-top: 8px;
+}

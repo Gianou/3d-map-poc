@@ -1,21 +1,16 @@
 <div class="layer-panel-container">
-  <h2>3D Layers</h2>
+  <h2>3D Capabilities</h2>
   <div class="panel-content">
-    <div class="layer-item">
-      <div class="layer-info">
-        <div class="layer-title-row">
-          <h4>OSM Buildings</h4>
-        </div>
-        <p class="layer-description">Display 3D buildings on the map</p>
-      </div>
-      <button
-        class="toggle-btn"
-        [class.active]="osmBuildingsService.buildingsEnabled()"
-        (click)="onToggleBuildings()"
-        [attr.aria-label]="'Toggle OSM Buildings'"
-      >
-        {{ osmBuildingsService.buildingsEnabled() ? "ON" : "OFF" }}
-      </button>
-    </div>
+    @switch (currentTech()) {
+      @case ('leaflet-osm') {
+        <app-leaflet-3d-panel></app-leaflet-3d-panel>
+      }
+      @case ('openlayers') {
+        <app-openlayers-3d-panel></app-openlayers-3d-panel>
+      }
+      @case ('maplibre') {
+        <app-maplibre-3d-panel></app-maplibre-3d-panel>
+      }
+    }
   </div>
 </div>
