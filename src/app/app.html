@@ -1,6 +1,18 @@
 <div class="app-container">
   <div class="header">
-    <h1>3D Leaflet Proof of Concept</h1>
+    <h1>3D Map POC - Multi-Library Demo</h1>
+    <div class="tech-selector">
+      <label for="tech-select">Map Library:</label>
+      <select
+        id="tech-select"
+        [value]="currentTech()"
+        (change)="onTechChange($event)"
+      >
+        <option value="leaflet-osm">Leaflet + OSM Buildings</option>
+        <option value="openlayers">OpenLayers</option>
+        <option value="maplibre">MapLibre GL</option>
+      </select>
+    </div>
   </div>
   <div class="content">
     <div class="panel-section">

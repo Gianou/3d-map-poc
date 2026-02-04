@@ -1,6 +1,55 @@
-# 3dMapPoc
+# 3D Map POC - Multi-Library Demo
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.1.0.
+A proof-of-concept Angular application demonstrating runtime switching between multiple map libraries with support for raster layers, GeoJSON, and 3D capabilities.
+
+## Features
+
+- **Runtime Library Switching**: Switch between map technologies without rebuilding
+- **Multiple Map Libraries**:
+  - Leaflet + OSM Buildings
+  - OpenLayers
+  - MapLibre GL
+- **Unified API**: Abstract provider pattern for consistent layer management
+- **Layer Support**:
+  - WMS layers from GeoServer
+  - GeoJSON layers
+  - 3D buildings (library-specific implementations)
+
+## Architecture
+
+### Provider Pattern
+
+The application uses an abstraction layer to support multiple mapping libraries:
+
+```
+services/
+├── map-provider.interface.ts    # IMapProvider & I3DProvider interfaces
+├── map-state.service.ts         # Global state for current technology
+├── map-factory.service.ts       # Creates the appropriate provider
+├── layer.service.ts             # Layer management using IMapProvider
+├── osm-buildings.service.ts     # 3D building management
+└── map-providers/
+    ├── leaflet-osm.provider.ts  # Leaflet implementation
+    ├── openlayers.provider.ts   # OpenLayers implementation
+    └── maplibre.provider.ts     # MapLibre GL implementation
+```
+
+### Key Components
+
+- **MapComponent**: Manages map lifecycle, responds to technology changes
+- **PanelComponent**: UI for layer and settings controls
+- **GeoserverPanelComponent**: WMS layer discovery and toggling
+- **3DLayerPanelComponent**: 3D building controls
+
+### Technology Switching Flow
+
+1. User selects technology from dropdown
+2. `MapStateService` updates the current technology signal
+3. `MapComponent` detects change via effect
+4. Old map provider is destroyed
+5. `MapFactoryService` creates new provider
+6. Map is reinitialized with new provider
+7. Services receive new provider instance
 
 ## Development server
 
