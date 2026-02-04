@@ -2,13 +2,13 @@
   <h2>3D Capabilities</h2>
   <div class="panel-content">
     @switch (currentTech()) {
-      @case ('leaflet-osm') {
+      @case ("leaflet-osm") {
         <app-leaflet-3d-panel></app-leaflet-3d-panel>
       }
-      @case ('openlayers') {
+      @case ("openlayers") {
         <app-openlayers-3d-panel></app-openlayers-3d-panel>
       }
-      @case ('maplibre') {
+      @case ("maplibre") {
         <app-maplibre-3d-panel></app-maplibre-3d-panel>
       }
     }
