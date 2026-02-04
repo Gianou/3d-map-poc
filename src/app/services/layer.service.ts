@@ -54,6 +54,10 @@ export class LayerService {
     }
   }
 
+  getMapProvider(): IMapProvider | undefined {
+    return this.mapProvider;
+  }
+
   fetchLayers(): void {
     this.http.get(this.gsApiUrl, { responseType: 'text' }).subscribe({
       next: (response) => {

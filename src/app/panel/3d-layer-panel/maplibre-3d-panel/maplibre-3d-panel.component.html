@@ -1,23 +1,51 @@
+<div class="examples-header">
+  <h3>3D Examples for MapLibre GL</h3>
+  <p class="examples-subtitle">Explore different 3D visualization techniques</p>
+</div>
+
 <div class="layer-item">
   <div class="layer-info">
     <div class="layer-title-row">
-      <h4>3D Buildings (MapLibre GL)</h4>
+      <h4>MapTiler 3D Buildings</h4>
+      <span class="badge">Vector Tiles</span>
     </div>
-    <p class="layer-description">Display extruded 3D buildings with WebGL</p>
+    <p class="layer-description">
+      Global 3D building data from MapTiler using vector tiles
+    </p>
   </div>
   <button
     class="toggle-btn"
-    [class.active]="threeDService.buildingsEnabled()"
-    (click)="onToggleBuildings()"
-    [attr.aria-label]="'Toggle 3D Buildings'"
+    [class.active]="mapTilerBuildingsEnabled()"
+    (click)="onToggleMapTilerBuildings()"
+    [attr.aria-label]="'Toggle MapTiler 3D Buildings'"
   >
-    {{ threeDService.buildingsEnabled() ? "ON" : "OFF" }}
+    {{ mapTilerBuildingsEnabled() ? "ON" : "OFF" }}
+  </button>
+</div>
+
+<div class="layer-item">
+  <div class="layer-info">
+    <div class="layer-title-row">
+      <h4>Local GeoJSON Buildings</h4>
+      <span class="badge badge-local">Local Data</span>
+    </div>
+    <p class="layer-description">
+      Extruded buildings from buildings.geojson with custom heights
+    </p>
+  </div>
+  <button
+    class="toggle-btn"
+    [class.active]="localBuildingsEnabled()"
+    (click)="onToggleLocalBuildings()"
+    [attr.aria-label]="'Toggle Local 3D Buildings'"
+  >
+    {{ localBuildingsEnabled() ? "ON" : "OFF" }}
   </button>
 </div>
 
 <div class="info-note">
   <small
-    >Note: Uses MapLibre's built-in fill-extrusion for 3D building
-    visualization</small
+    >💡 Both examples use MapLibre's fill-extrusion layer type for native 3D
+    rendering</small
   >
 </div>
