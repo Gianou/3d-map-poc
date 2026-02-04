@@ -87,19 +87,18 @@ export class OpenLayersProvider implements IMapProvider, I3DProvider {
       }),
     });
 
+    // OpenLayers requires its own Style objects, ignore library-agnostic style option
     const vectorLayer = new VectorLayer({
       source: vectorSource,
-      style:
-        options?.style ||
-        new Style({
-          stroke: new Stroke({
-            color: '#3388ff',
-            width: 2,
-          }),
-          fill: new Fill({
-            color: 'rgba(51, 136, 255, 0.4)',
-          }),
+      style: new Style({
+        stroke: new Stroke({
+          color: '#3388ff',
+          width: 2,
         }),
+        fill: new Fill({
+          color: 'rgba(51, 136, 255, 0.4)',
+        }),
+      }),
     });
 
     this.map.addLayer(vectorLayer);
