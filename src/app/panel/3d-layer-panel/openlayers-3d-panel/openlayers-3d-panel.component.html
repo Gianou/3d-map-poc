@@ -1,6 +1,25 @@
-<div class="no-3d-message">
-  <div class="info-icon">ℹ️</div>
-  <h4>3D Not Supported</h4>
-  <p>OpenLayers does not have native 3D support.</p>
-  <p class="suggestion">Consider using OL-Cesium for 3D capabilities.</p>
+<div class="layer-item">
+  <div class="layer-info">
+    <div class="layer-title-row">
+      <h4>3D Extruded Buildings (OpenLayers + deck.gl)</h4>
+    </div>
+    <p class="layer-description">
+      WebGL-powered true 3D extrusion from buildings.geojson
+    </p>
+  </div>
+  <button
+    class="toggle-btn"
+    [class.active]="threeDService.buildingsEnabled()"
+    (click)="onToggleBuildings()"
+    [attr.aria-label]="'Toggle 3D Buildings'"
+  >
+    {{ threeDService.buildingsEnabled() ? "ON" : "OFF" }}
+  </button>
+</div>
+
+<div class="info-note">
+  <small
+    >💡 Using deck.gl WebGL overlay for true polygon extrusion with 45°
+    pitch</small
+  >
 </div>

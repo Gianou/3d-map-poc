@@ -10,4 +10,8 @@ import { ThreeDService } from '../../../services/three-d.service';
 })
 export class OpenLayers3DPanelComponent {
   threeDService = inject(ThreeDService);
+
+  onToggleBuildings(): void {
+    this.threeDService.toggleBuildings();
+  }
 }
