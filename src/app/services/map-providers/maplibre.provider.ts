@@ -23,18 +23,21 @@ export class MapLibreProvider implements IMapProvider {
       style: {
         version: 8,
         sources: {
-          'osm-tiles': {
+          'satellite-tiles': {
             type: 'raster',
-            tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+            tiles: [
+              'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+            ],
             tileSize: 256,
-            attribution: '© OpenStreetMap contributors',
+            attribution:
+              'Tiles © Esri — Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan',
           },
         },
         layers: [
           {
-            id: 'osm-tiles-layer',
+            id: 'satellite-tiles-layer',
             type: 'raster',
-            source: 'osm-tiles',
+            source: 'satellite-tiles',
             minzoom: 0,
             maxzoom: 19,
           },

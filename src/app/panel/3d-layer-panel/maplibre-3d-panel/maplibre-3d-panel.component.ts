@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { Map as MapLibreMap } from 'maplibre-gl';
+import { environment } from '../../../../environments/environment';
 import { LayerService } from '../../../services/layer.service';
 import { MapLibreProvider } from '../../../services/map-providers/maplibre.provider';
 
@@ -154,7 +155,7 @@ export class MapLibre3DPanelComponent {
     if (!this.map.getSource('openmaptiles')) {
       this.map.addSource('openmaptiles', {
         type: 'vector',
-        url: 'https://api.maptiler.com/tiles/v3/tiles.json?key=get_your_own_OpIi9ZULNHzrESv6T2vL',
+        url: `https://api.maptiler.com/tiles/v3/tiles.json?key=${environment.mapTilerApiKey}`,
       });
     }
 
@@ -293,7 +294,7 @@ export class MapLibre3DPanelComponent {
     if (!this.map.getSource('terrain-source')) {
       this.map.addSource('terrain-source', {
         type: 'raster-dem',
-        url: 'https://api.maptiler.com/tiles/terrain-rgb-v2/tiles.json?key=get_your_own_OpIi9ZULNHzrESv6T2vL',
+        url: `https://api.maptiler.com/tiles/terrain-rgb-v2/tiles.json?key=${environment.mapTilerApiKey}`,
         tileSize: 256,
       });
     }
@@ -325,15 +326,16 @@ export class MapLibre3DPanelComponent {
   private async enable3DModel(): Promise<void> {
     if (!this.map) return;
 
-    const modelOrigin: [number, number] = [7.538361, 46.283111]; // 7°32'18.1"E, 46°16'59.2"N
+    const modelOrigin: [number, number] = [7.538361, 46.283111];
+    const modelAltitude = 0;
+    const modelScale = 3;
 
-    // Automatically enable camera controls for better viewing
+    // Auto-enable camera controls and fly to location
     if (!this.cameraControlsEnabled()) {
       this.enableCameraControls();
       this.cameraControlsEnabled.set(true);
     }
 
-    // Pan to the model location and tilt camera
     this.map.flyTo({
       center: modelOrigin,
       pitch: 60,
@@ -346,108 +348,74 @@ export class MapLibre3DPanelComponent {
       id: '3d-model',
       type: 'custom',
       renderingMode: '3d',
-      onAdd: function (map: any, gl: WebGLRenderingContext) {
-        // Dynamically import Three.js
-        import('three').then((THREE) => {
-          // Store THREE reference in the layer context
-          this.THREE = THREE;
+      onAdd: async function (map: any, gl: WebGLRenderingContext) {
+        // Load Three.js and OBJLoader
+        const [THREE, { OBJLoader }] = await Promise.all([
+          import('three'),
+          import('three/examples/jsm/loaders/OBJLoader.js'),
+        ]);
 
-          import('three/examples/jsm/loaders/OBJLoader.js').then(
-            (OBJLoaderModule) => {
-              this.camera = new THREE.Camera();
-              this.scene = new THREE.Scene();
+        this.THREE = THREE;
+        this.camera = new THREE.Camera();
+        this.scene = new THREE.Scene();
 
-              // Add lights
-              const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-              directionalLight.position.set(0, -70, 100).normalize();
-              this.scene.add(directionalLight);
+        // Setup lighting
+        this.scene.add(
+          new THREE.DirectionalLight(0xffffff, 1).position
+            .set(0, -70, 100)
+            .normalize(),
+        );
+        this.scene.add(
+          new THREE.DirectionalLight(0xffffff, 1).position
+            .set(0, 70, 100)
+            .normalize(),
+        );
+        this.scene.add(new THREE.AmbientLight(0xffffff, 0.8));
 
-              const directionalLight2 = new THREE.DirectionalLight(0xffffff, 1);
-              directionalLight2.position.set(0, 70, 100).normalize();
-              this.scene.add(directionalLight2);
+        // Load model
+        new OBJLoader().load(
+          '/data/pingpongtable.obj',
+          (obj: any) => {
+            obj.traverse((child: any) => {
+              if (child instanceof THREE.Mesh) {
+                child.material = new THREE.MeshPhongMaterial({
+                  color: 0xff0000,
+                  shininess: 30,
+                });
+              }
+            });
+            this.scene.add(obj);
+            this.model = obj;
+            console.log('3D model loaded');
+            map.triggerRepaint();
+          },
+          undefined,
+          (error: any) => console.error('Error loading model:', error),
+        );
 
-              const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-              this.scene.add(ambientLight);
-
-              // Load OBJ model
-              const loader = new OBJLoaderModule.OBJLoader();
-              loader.load(
-                '/data/10520_pingpongtable_L2.obj',
-                (obj: any) => {
-                  // Set material
-                  obj.traverse((child: any) => {
-                    if (child instanceof THREE.Mesh) {
-                      child.material = new THREE.MeshPhongMaterial({
-                        color: 0xff0000, // Bright red for visibility
-                        shininess: 30,
-                      });
-                    }
-                  });
-
-                  this.scene.add(obj);
-                  this.model = obj;
-                  console.log('3D model loaded successfully');
-                  map.triggerRepaint();
-                },
-                (progress: any) => {
-                  console.log(
-                    'Loading model:',
-                    ((progress.loaded / progress.total) * 100).toFixed(2) + '%',
-                  );
-                },
-                (error: any) => {
-                  console.error('Error loading OBJ model:', error);
-                },
-              );
-
-              this.map = map;
-
-              // Create renderer
-              this.renderer = new THREE.WebGLRenderer({
-                canvas: map.getCanvas(),
-                context: gl,
-                antialias: true,
-              });
-
-              this.renderer.autoClear = false;
-            },
-          );
+        // Setup renderer
+        this.renderer = new THREE.WebGLRenderer({
+          canvas: map.getCanvas(),
+          context: gl,
+          antialias: true,
         });
+        this.renderer.autoClear = false;
+        this.map = map;
       },
       render: function (gl: WebGLRenderingContext, args: any) {
         if (!this.THREE || !this.camera || !this.model) return;
 
-        const THREE = this.THREE;
-
-        // Parameters to ensure the model is georeferenced correctly on the map
-        const modelAltitude = 0;
-        const scaling = 0.05; // Scale for ping pong table size
-
-        // Rotation angles in radians
-        const rotateX = Math.PI / 2; // 90 degrees
-        const rotateY = Math.PI;
-        const rotateZ = 0;
-
-        // Use the official API to get the correct model matrix
         const modelMatrix = this.map.transform.getMatrixForModel(
           modelOrigin,
           modelAltitude,
         );
 
-        // Create rotation matrices
-        const rotationX = new THREE.Matrix4().makeRotationX(rotateX);
-        const rotationY = new THREE.Matrix4().makeRotationY(rotateY);
-        const rotationZ = new THREE.Matrix4().makeRotationZ(rotateZ);
-
-        const m = new THREE.Matrix4().fromArray(
+        const m = new this.THREE.Matrix4().fromArray(
           args.defaultProjectionData.mainMatrix,
         );
-        const l = new THREE.Matrix4()
+        const l = new this.THREE.Matrix4()
           .fromArray(modelMatrix)
-          .scale(new THREE.Vector3(scaling, scaling, scaling))
-          .multiply(rotationX)
-          .multiply(rotationY)
-          .multiply(rotationZ);
+          .scale(new this.THREE.Vector3(modelScale, modelScale, modelScale));
 
         this.camera.projectionMatrix = m.multiply(l);
         this.renderer.resetState();
@@ -457,7 +425,6 @@ export class MapLibre3DPanelComponent {
     };
 
     this.map.addLayer(customLayer);
-
     console.log('3D model layer added at 46°16\'59.2"N 7°32\'18.1"E');
   }
 

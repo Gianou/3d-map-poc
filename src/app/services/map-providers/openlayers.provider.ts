@@ -4,7 +4,7 @@ import { GeoJSON } from 'ol/format';
 import TileLayer from 'ol/layer/Tile';
 import VectorLayer from 'ol/layer/Vector';
 import { fromLonLat } from 'ol/proj';
-import { OSM, TileWMS } from 'ol/source';
+import { TileWMS, XYZ } from 'ol/source';
 import VectorSource from 'ol/source/Vector';
 import { Fill, Stroke, Style } from 'ol/style';
 import {
@@ -26,7 +26,11 @@ export class OpenLayersProvider implements IMapProvider {
       target: containerId,
       layers: [
         new TileLayer({
-          source: new OSM(),
+          source: new XYZ({
+            url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+            attributions:
+              'Tiles © Esri — Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan',
+          }),
         }),
       ],
       view: new View({
