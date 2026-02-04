@@ -18,8 +18,12 @@ export class MapLibre3DPanelComponent {
   terrainEnabled = signal<boolean>(false);
   modelEnabled = signal<boolean>(false);
   cameraControlsEnabled = signal<boolean>(false);
+  deckGlEnabled = signal<boolean>(false);
+  globeEnabled = signal<boolean>(false);
   currentPitch = signal<number>(0);
   currentBearing = signal<number>(0);
+
+  private deckOverlay: any = null;
 
   private get provider(): MapLibreProvider | undefined {
     const currentProvider = this.layerService.getMapProvider();
@@ -68,6 +72,26 @@ export class MapLibre3DPanelComponent {
     } else {
       await this.enable3DModel();
       this.modelEnabled.set(true);
+    }
+  }
+
+  async onToggleDeckGl(): Promise<void> {
+    if (this.deckGlEnabled()) {
+      this.disableDeckGl();
+      this.deckGlEnabled.set(false);
+    } else {
+      await this.enableDeckGl();
+      this.deckGlEnabled.set(true);
+    }
+  }
+
+  onToggleGlobe(): void {
+    if (this.globeEnabled()) {
+      this.disableGlobe();
+      this.globeEnabled.set(false);
+    } else {
+      this.enableGlobe();
+      this.globeEnabled.set(true);
     }
   }
 
@@ -445,5 +469,114 @@ export class MapLibre3DPanelComponent {
     }
 
     console.log('3D model disabled');
+  }
+
+  private async enableDeckGl(): Promise<void> {
+    if (!this.map) return;
+
+    // Automatically enable camera controls for better 3D viewing
+    if (!this.cameraControlsEnabled()) {
+      this.enableCameraControls();
+      this.cameraControlsEnabled.set(true);
+    }
+
+    try {
+      // Dynamically import deck.gl modules
+      const [{ Deck }, { MapboxOverlay }, { HexagonLayer }] = await Promise.all(
+        [
+          import('@deck.gl/core'),
+          import('@deck.gl/mapbox'),
+          import('@deck.gl/aggregation-layers'),
+        ],
+      );
+
+      // Load building data for visualization
+      const response = await fetch('/data/buildings.geojson');
+      const geojsonData = await response.json();
+
+      // Extract building centroids for hexagon binning
+      const points = geojsonData.features.map((feature: any) => {
+        const coords = feature.geometry.coordinates[0];
+        const centerLon =
+          coords.reduce((sum: number, c: any) => sum + c[0], 0) / coords.length;
+        const centerLat =
+          coords.reduce((sum: number, c: any) => sum + c[1], 0) / coords.length;
+        return {
+          coordinates: [centerLon, centerLat],
+          height: feature.properties.height || 10,
+        };
+      });
+
+      // Create deck.gl hexagon layer
+      const hexagonLayer = new HexagonLayer({
+        id: 'hexagon-layer',
+        data: points,
+        getPosition: (d: any) => d.coordinates,
+        getElevationWeight: (d: any) => d.height,
+        elevationScale: 2,
+        extruded: true,
+        radius: 50,
+        coverage: 0.9,
+        opacity: 0.8,
+        pickable: true,
+        autoHighlight: true,
+        colorRange: [
+          [255, 255, 178],
+          [254, 217, 118],
+          [254, 178, 76],
+          [253, 141, 60],
+          [240, 59, 32],
+          [189, 0, 38],
+        ],
+      });
+
+      // Create MapboxOverlay
+      this.deckOverlay = new MapboxOverlay({
+        layers: [hexagonLayer],
+      });
+
+      // Add overlay to map
+      this.map.addControl(this.deckOverlay as any);
+
+      console.log('deck.gl hexagon layer enabled (MapLibre + deck.gl)');
+    } catch (error) {
+      console.error('Error enabling deck.gl:', error);
+    }
+  }
+
+  private disableDeckGl(): void {
+    if (!this.map || !this.deckOverlay) return;
+
+    // Remove deck.gl overlay
+    this.map.removeControl(this.deckOverlay);
+    this.deckOverlay = null;
+
+    console.log('deck.gl layer disabled');
+  }
+
+  private enableGlobe(): void {
+    if (!this.map) return;
+
+    // Set globe projection
+    this.map.setProjection({ type: 'globe' } as any);
+
+    // Zoom out to see the globe effect better
+    this.map.flyTo({
+      zoom: 1.5,
+      pitch: 0,
+      bearing: 0,
+      duration: 2000,
+    });
+
+    console.log('Globe projection enabled');
+  }
+
+  private disableGlobe(): void {
+    if (!this.map) return;
+
+    // Reset to mercator projection
+    this.map.setProjection({ type: 'mercator' } as any);
+
+    console.log('Globe projection disabled, back to Mercator');
   }
 }

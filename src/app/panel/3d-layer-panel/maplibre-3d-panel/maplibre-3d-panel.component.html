@@ -86,6 +86,46 @@
 <div class="layer-item">
   <div class="layer-info">
     <div class="layer-title-row">
+      <h4>deck.gl Hexagon Layer</h4>
+      <span class="badge badge-deckgl">GPU Accelerated</span>
+    </div>
+    <p class="layer-description">
+      3D hexagonal binning showing building density with deck.gl
+    </p>
+  </div>
+  <button
+    class="toggle-btn"
+    [class.active]="deckGlEnabled()"
+    (click)="onToggleDeckGl()"
+    [attr.aria-label]="'Toggle deck.gl Layer'"
+  >
+    {{ deckGlEnabled() ? "ON" : "OFF" }}
+  </button>
+</div>
+
+<div class="layer-item">
+  <div class="layer-info">
+    <div class="layer-title-row">
+      <h4>Globe Projection</h4>
+      <span class="badge badge-globe">3D Earth</span>
+    </div>
+    <p class="layer-description">
+      Switch between flat Mercator and 3D globe view
+    </p>
+  </div>
+  <button
+    class="toggle-btn"
+    [class.active]="globeEnabled()"
+    (click)="onToggleGlobe()"
+    [attr.aria-label]="'Toggle Globe Projection'"
+  >
+    {{ globeEnabled() ? "ON" : "OFF" }}
+  </button>
+</div>
+
+<div class="layer-item">
+  <div class="layer-info">
+    <div class="layer-title-row">
       <h4>3D Camera Controls</h4>
       <span class="badge badge-camera">Interactive</span>
     </div>
@@ -142,7 +182,7 @@
 
 <div class="info-note">
   <small
-    >💡 Both examples use MapLibre's fill-extrusion layer type for native 3D
-    rendering</small
+    >💡 MapLibre provides native 3D rendering, deck.gl adds GPU-accelerated
+    advanced visualizations</small
   >
 </div>

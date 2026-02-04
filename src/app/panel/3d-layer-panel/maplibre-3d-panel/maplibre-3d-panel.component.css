@@ -48,6 +48,16 @@
   color: #2e7d32;
 }
 
+.badge-deckgl {
+  background-color: #e1f5fe;
+  color: #0277bd;
+}
+
+.badge-globe {
+  background-color: #e8eaf6;
+  color: #3f51b5;
+}
+
 .layer-item {
   padding: 12px;
   border: 1px solid #ddd;
