@@ -215,3 +215,46 @@
 .preset-cinematic:hover {
   background-color: #c8e6c9;
 }
+
+/* API Key Section */
+.api-key-section {
+  margin-top: 20px;
+  padding: 12px;
+  background-color: #fff3e0;
+  border: 2px solid #ff9800;
+  border-radius: 6px;
+}
+
+.api-key-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #e65100;
+  margin-bottom: 8px;
+}
+
+.api-key-header svg {
+  flex-shrink: 0;
+}
+
+.api-key-description {
+  margin: 0 0 12px 0;
+  font-size: 11px;
+  color: #ef6c00;
+  line-height: 1.4;
+}
+
+.api-key-description code {
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-family: "Courier New", monospace;
+}
+
+.api-key-section .layer-item {
+  background-color: #ffffff;
+  border-color: #ffb74d;
+}
